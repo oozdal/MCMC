@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import os
+import pyslha
 
 class MCMC():
     def __init__(self,PathToFreeParams):
@@ -57,8 +58,29 @@ class MCMC():
             os.system(str(self.SPhenoExeFullPath)+" "+str(self.LesHouchesInputFullPath))
         else:
             print "Error in RunSPheno: No LesHouches File is found in the given path!"
+    
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+    
 
 #    def CopySLHAtoCards(self, SLHAPath, CardsPath):
 #        shutil.copy2(SLHAPath, CardsPath + "/param_card.dat") # complete target filename given
