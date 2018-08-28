@@ -37,7 +37,24 @@ class ReadSLHA():
 
         return self.LogicSMlikeHiggsMass    
 
+    def CheckBphysics(self):
+        self.Bsmumu   = self.ReadSLHA_Block("FLAVORKITQFV", 4006)
+        self.BXsgamma = self.ReadSLHA_Block("FLAVORKITQFV", 200)
+        self.RBtaunu  = self.ReadSLHA_Block("FLAVORKITQFV", 503)
+            
+        self.CheckBsmumu = None
+        self.CheckBXsgamma = None
+        self.CheckRBtaunu = None
 
+        self.Bphysics = None
+
+        if self.Bsmumu >= 1.1E-9 and self.Bsmumu <= 6.4E-9:       self.CheckBsmumu = True
+        if self.BXsgamma >= 2.99E-4 and self.BXsgamma <= 3.87E-4: self.CheckBXsgamma = True
+        if self.RBtaunu >= 0.15 and self.RBtaunu <= 2.41:         self.CheckRBtaunu = True
+
+        self.Bphysics = self.CheckBsmumu and self.CheckBXsgamma
+    
+        return self.Bphysics
 
 
 

@@ -5,22 +5,36 @@ import os
 PathForFreeParams = os.path.join("/Users/oozdal/readclass/", "freeparams.txt")
 LesHouchesFileFullPath = os.path.join("/Users/oozdal/readclass/", "LesHouches.in.LRSM")
 UpdatedLesHouchesFileFullPath = os.path.join(LesHouchesFileFullPath)+"_updated"
-SPhenoExecFullPath = os.path.join("/Users/oozdal/hepwork/SPheno-3.3.8/bin/", "SPhenoLRSM_NonSUSY_CKMRgRfree")
-SPhenoOutputName = os.path.join("/Users/oozdal/readclass", "SPheno.spc.LRSM_NonSUSY_CKMRgRfree")
+SPhenoExecFullPath = os.path.join("/Users/oozdal/hepwork/SPheno-3.3.8/bin/", "SPhenoLRSM_NonSUSY_CKMRgR_tsbar")
+SPhenoOutputName = os.path.join("/Users/oozdal/readclass", "SPheno.spc.LRSM_NonSUSY_CKMRgR_tsbar")
+SPhenoOutputDestination = os.path.join("/Users/oozdal/readclass/LRSM_MCMC", "LRSM_")
 
 ###################################################################
 
-OutputNumber = 0 
-MaxNumberOfOutput = 100
+OutputNumber = 1
+MaxNumberOfOutput = 20
 
 Monte = MCMC(PathForFreeParams)
 
-#while OutputNumber < MaxNumberOfOutput:
-Monte.AssignValues(LesHouchesFileFullPath, UpdatedLesHouchesFileFullPath)
-Monte.RunSPheno(SPhenoExecFullPath)
-if os.path.isfile(SPhenoOutputName) ==  True:
-    newSLHA = ReadSLHA(SPhenoOutputName)
-    if newSLHA.CheckSMlikeHiggsMass() == True:
-        print "we did it"
+while OutputNumber < MaxNumberOfOutput:
+#    Monte.AssignValues(LesHouchesFileFullPath, UpdatedLesHouchesFileFullPath)
+    Monte.GenerateCKMRmatrix(LesHouchesFileFullPath,UpdatedLesHouchesFileFullPath)
+    Monte.RunSPheno(SPhenoExecFullPath, UpdatedLesHouchesFileFullPath)
+    if os.path.isfile(SPhenoOutputName) ==  True:
+        newSLHA = ReadSLHA(SPhenoOutputName)
+        if newSLHA.CheckSMlikeHiggsMass() == True:
+            if newSLHA.CheckBphysics() == True:
+                SPhenoOutputTag = SPhenoOutputDestination + str(OutputNumber)
+                os.rename(SPhenoOutputName,SPhenoOutputTag)
+                OutputNumber = OutputNumber + 1
+                print "New solution is found!"
+            else:
+                os.remove(SPhenoOutputName)
+                print "B-physics is not satisfied!"
+                continue
+        else:
+            print "SM-like Higgs Mass is not satisfied!"
+            continue
     else:
-        print "nanay"
+        print "Error: No SLHA Output is found."
+        continue
